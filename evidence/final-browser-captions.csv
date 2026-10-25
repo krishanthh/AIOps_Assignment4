@@ -1,0 +1,14 @@
+filename,caption,status,error
+public-example-01.jpg,a woman sitting on the beach with a dog,success,
+public-example-02.jpg,a woman sitting on the beach with a dog,success,
+public-example-03.jpg,a woman sitting on the beach with a dog,success,
+public-example-04.jpg,a woman sitting on the beach with a dog,success,
+public-example-05.jpg,a woman sitting on the beach with a dog,success,
+public-example-06.jpg,a woman sitting on the beach with a dog,success,
+public-example-07.jpg,a woman sitting on the beach with a dog,success,
+public-example-08.jpg,a woman sitting on the beach with a dog,success,
+public-example-09.jpg,a woman sitting on the beach with a dog,success,
+public-example-10.jpg,a woman sitting on the beach with a dog,success,
+public-example-11.jpg,a woman sitting on the beach with a dog,success,
+public-example-12.jpg,a woman sitting on the beach with a dog,success,
+invalid.png,,error,"Invalid, corrupt, or oversized image."

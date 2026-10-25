@@ -1,0 +1,41 @@
+{
+  "completed_on": "2026-11-19",
+  "python_tests_passed": 13,
+  "monitoring_configuration_and_rule_checks": "passed",
+  "real_model": "Salesforce/blip-image-captioning-base, CPU",
+  "recorded_single_image": "success",
+  "recorded_bulk": {
+    "successful_images": 12,
+    "error_images": 1,
+    "skipped_text_entries": 1
+  },
+  "dashboard_queries_validated": 36,
+  "scrape_targets": [
+    {
+      "job": "alertmanager",
+      "health": "up",
+      "last_error": ""
+    },
+    {
+      "job": "caption-app",
+      "health": "up",
+      "last_error": ""
+    },
+    {
+      "job": "node",
+      "health": "up",
+      "last_error": ""
+    },
+    {
+      "job": "prometheus",
+      "health": "up",
+      "last_error": ""
+    }
+  ],
+  "grafana_datasource": "OK",
+  "video_file": "../assignment videos/Assignment_4_Captioning_and_Monitoring_Demo.mp4",
+  "video_seconds": 308.6,
+  "continuous_dashboard_seconds": 100.01,
+  "dashboard_refresh": "5s",
+  "native_launcher": "Independent process sessions; current monitoring data is separate from historical runtime storage."
+}

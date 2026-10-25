@@ -1,0 +1,4794 @@
+{
+  "id": null,
+  "uid": "caption-observability",
+  "title": "Caption Lab \u00b7 CPU Observability",
+  "description": "DA3408 A4: real application and native host metrics; health \u2192 traffic \u2192 latency \u2192 resources \u2192 clients.",
+  "tags": [
+    "DA3408",
+    "CPU",
+    "Prometheus",
+    "captioning"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m"
+    ]
+  },
+  "editable": true,
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "Caption Lab | CPU application and host observability",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 5
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**DA3408 \u00b7 BLIP base \u00b7 CPU only**\n\nRead top to bottom: availability \u2192 work rate \u2192 latency \u2192 hardware \u2192 client cohorts. All charts share a time axis and refresh every **5 seconds**. Rates use a 2-minute window. Run a bulk ZIP and compare its active-job band with host CPU and RAM below. Mode comparison charts: single = blue solid; bulk = orange dashed. Legends, points, units and linear axis labels retain meaning in print. Blank latency means no inference observations, not zero latency. Model readiness is separate from exporter availability."
+      }
+    },
+    {
+      "id": 2,
+      "type": "row",
+      "title": "01 \u00b7 Availability and readiness",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 3,
+      "title": "Metrics endpoint | scrape health",
+      "description": "1 = reachable, 0 = failed scrape. This measures metrics availability, not model readiness.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"caption-app\"}",
+          "legendFormat": "App exporter",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "up{job=\"node\"}",
+          "legendFormat": "Node exporter",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Value \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations",
+          "max": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "App exporter"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Node exporter"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Model | loaded on CPU",
+      "description": "1 = weights loaded and ready. 0 until the first valid image triggers loading. Model loading does not mean exporter downtime.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "caption_model_ready",
+          "legendFormat": "Ready",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "caption_model_loading",
+          "legendFormat": "Loading",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 8,
+        "y": 6,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Value \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations",
+          "max": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ready"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Loading"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Images | process lifetime",
+      "description": "Cumulative real image outcomes since this application process started. Restart resets counters.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(caption_images_total{status=\"success\"})",
+          "legendFormat": "Captioned",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "sum(caption_images_total{status=\"error\"})",
+          "legendFormat": "Failed",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 16,
+        "y": 6,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Value \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Captioned"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "id": 6,
+      "type": "row",
+      "title": "02 \u00b7 Traffic and job outcomes",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 7,
+      "title": "Throughput | successful images",
+      "description": "Two-minute successful image rate. Multiply per-second counter rate by 60 for images/minute.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "60 * sum(rate(caption_images_total{mode=\"single\",status=\"success\"}[2m]))",
+          "legendFormat": "Single",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "60 * sum(rate(caption_images_total{mode=\"bulk\",status=\"success\"}[2m]))",
+          "legendFormat": "Bulk",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 11,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:images/min",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Successful images / minute \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Single"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Active jobs | correlate bulk with hardware below",
+      "description": "Gauge counts accepted or validating jobs, including model-lock wait. Bulk jobs create longer CPU plateaus. No interpolation across missing scrapes.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(caption_active_requests{mode=\"single\"})",
+          "legendFormat": "Single",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "sum(caption_active_requests{mode=\"bulk\"})",
+          "legendFormat": "Bulk",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 11,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Concurrent jobs \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Single"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Jobs | outcome rate",
+      "description": "A job is success if all images succeeded, partial if some succeeded, error if none succeeded or validation failed.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "60 * sum by (mode,status) (rate(caption_requests_total[2m]))",
+          "legendFormat": "{{mode}} \u00b7 {{status}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:jobs/min",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Jobs / minute \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 success"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 partial"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#009E73"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 success"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#CC79A7"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 partial"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56B4E9"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#D55E00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Pending work | remaining images",
+      "description": "Remaining images in accepted jobs, including the image currently in progress. Drains during sequential bulk processing.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(caption_pending_images{mode=\"single\"})",
+          "legendFormat": "Single",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "sum(caption_pending_images{mode=\"bulk\"})",
+          "legendFormat": "Bulk",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Remaining images \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Single"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": "row",
+      "title": "03 \u00b7 Latency and upload sizes",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 12,
+      "title": "Inference latency | median and tail",
+      "description": "Histogram estimates p50 and p95; includes failed inference attempts, excludes queue wait, decode and model load. Seconds, linear. Compare tail with median.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(caption_inference_seconds_bucket{mode=\"single\"}[2m])))",
+          "legendFormat": "Single p50",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(caption_inference_seconds_bucket{mode=\"single\"}[2m])))",
+          "legendFormat": "Single p95",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(caption_inference_seconds_bucket{mode=\"bulk\"}[2m])))",
+          "legendFormat": "Bulk p50",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "D",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(caption_inference_seconds_bucket{mode=\"bulk\"}[2m])))",
+          "legendFormat": "Bulk p95",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 28,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Inference seconds \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Single p50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Single p95"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    2,
+                    2
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bulk p50"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bulk p95"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    2,
+                    2
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "title": "Job duration | Summary mean",
+      "description": "Sum of job seconds / number of jobs over 2 minutes. Includes validation, first model load and waiting. Undefined when no completed jobs.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(caption_job_duration_seconds_sum{mode=\"single\"}[2m])) / sum(rate(caption_job_duration_seconds_count{mode=\"single\"}[2m]))",
+          "legendFormat": "Single",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(caption_job_duration_seconds_sum{mode=\"bulk\"}[2m])) / sum(rate(caption_job_duration_seconds_count{mode=\"bulk\"}[2m]))",
+          "legendFormat": "Bulk",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 28,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Mean job seconds \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Single"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "title": "CPU queue | mean wait per image",
+      "description": "Mean lock wait excludes model load and inference; grows when several users submit at once.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(caption_queue_wait_seconds_sum{mode=\"single\"}[2m])) / sum(rate(caption_queue_wait_seconds_count{mode=\"single\"}[2m]))",
+          "legendFormat": "Single",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(caption_queue_wait_seconds_sum{mode=\"bulk\"}[2m])) / sum(rate(caption_queue_wait_seconds_count{mode=\"bulk\"}[2m]))",
+          "legendFormat": "Bulk",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Mean queue seconds \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Single"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "title": "Uploads | mean submitted bytes",
+      "description": "Summary mean upload bytes per job. Bulk ZIPs should align with pending-work and CPU increases; compressed bytes do not equal expanded bytes.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(caption_upload_bytes_sum{mode=\"single\"}[2m])) / sum(rate(caption_upload_bytes_count{mode=\"single\"}[2m]))",
+          "legendFormat": "Single",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(caption_upload_bytes_sum{mode=\"bulk\"}[2m])) / sum(rate(caption_upload_bytes_count{mode=\"bulk\"}[2m]))",
+          "legendFormat": "Bulk",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 36,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Mean bytes / job \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Single"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "type": "row",
+      "title": "04 \u00b7 Host resources and application correlation",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 44,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 17,
+      "title": "Host CPU | all-core utilization",
+      "description": "100 \u00d7 (1 \u2212 mean idle rate across logical CPUs). A two-thread app may saturate two cores while host aggregate stays below 100%. Compare aligned bulk-active panel.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=\"node\",mode=\"idle\"}[2m])))",
+          "legendFormat": "Host CPU",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Host CPU percent \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations",
+          "max": 100
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Host CPU"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "title": "Host RAM | available-memory accounting",
+      "description": "100 \u00d7 (1 \u2212 MemAvailable / MemTotal). Uses available, not free, so reclaimable caches are treated correctly. Compare app RSS below.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node\"} / node_memory_MemTotal_bytes{job=\"node\"})",
+          "legendFormat": "RAM used",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 45,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Host RAM percent \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations",
+          "max": 100
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "RAM used"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 19,
+      "title": "Application memory | RSS and weights",
+      "description": "RSS is full process resident memory; parameter bytes counts model weights only. First model load should produce an RSS step.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "caption_process_memory_bytes",
+          "legendFormat": "Process RSS",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "caption_model_parameter_bytes",
+          "legendFormat": "Model weights",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 53,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Resident bytes \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Process RSS"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Model weights"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 20,
+      "title": "Application CPU | core-equivalent percent",
+      "description": "100% equals one fully busy core; may exceed 100% for threaded inference. Host CPU above is normalized across all cores.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "caption_process_cpu_percent",
+          "legendFormat": "App CPU",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 53,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "App CPU percent (100 = one core) \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "App CPU"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 21,
+      "title": "Root disk | used capacity",
+      "description": "100 \u00d7 (1 \u2212 available / size) on the native node_exporter root mount. Uses available bytes for the non-root user. Legend preserves mount and device.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * (1 - node_filesystem_avail_bytes{job=\"node\",mountpoint=\"/\",fstype!=\"rootfs\"} / node_filesystem_size_bytes{job=\"node\",mountpoint=\"/\",fstype!=\"rootfs\"})",
+          "legendFormat": "{{device}} \u00b7 {{mountpoint}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 61,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Root disk percent \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations",
+          "max": 100
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 22,
+      "title": "Inference | CPU work in progress",
+      "description": "Shared model lock allows at most one inference at a time. Compare with active requests to identify waiting sessions.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "caption_inference_active",
+          "legendFormat": "Inference active",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 61,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Images inside model \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations",
+          "max": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Inference active"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 23,
+      "type": "row",
+      "title": "05 \u00b7 Clients, errors and alert pipeline",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 69,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 24,
+      "title": "Client cohorts | job rate",
+      "description": "Session IDs hash to 16 stable bounded cohorts. A cohort may contain multiple clients; this is not a unique-user count. Raw identifiers are never labels.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "60 * sum by (mode,client_bucket) (rate(caption_client_requests_total[2m]))",
+          "legendFormat": "{{mode}} \u00b7 cohort {{client_bucket}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 70,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:jobs/min",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Jobs / minute \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 0"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 1"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 2"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#009E73"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 3"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#CC79A7"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 4"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56B4E9"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#D55E00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 6"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 7"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 8"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#009E73"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 9"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#CC79A7"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56B4E9"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 11"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#D55E00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 12"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 13"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 14"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#009E73"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 cohort 15"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#CC79A7"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 0"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56B4E9"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 1"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#D55E00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 2"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 3"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 4"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#009E73"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 5"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#CC79A7"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 6"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56B4E9"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 7"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#D55E00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 8"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 9"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 10"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#009E73"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 11"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#CC79A7"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 12"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56B4E9"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 13"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#D55E00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 14"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 cohort 15"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 25,
+      "title": "Errors | reason and mode",
+      "description": "Bounded reasons: validation, decode, model_load, inference. Validation errors are jobs rejected before image attempts.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "60 * sum by (mode,reason) (rate(caption_errors_total[2m]))",
+          "legendFormat": "{{mode}} \u00b7 {{reason}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": true,
+          "instant": false,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 70,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix:errors/min",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Errors / minute \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 validation"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 decode"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 model_load"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#009E73"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "single \u00b7 inference"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#CC79A7"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 validation"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56B4E9"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 decode"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#D55E00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 model_load"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bulk \u00b7 inference"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 26,
+      "title": "Alert pipeline | component health",
+      "description": "Prometheus and Alertmanager scrape health. Actual webhook notifications append to .runtime/alerts.jsonl.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"prometheus\"}",
+          "legendFormat": "Prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        },
+        {
+          "refId": "B",
+          "expr": "up{job=\"alertmanager\"}",
+          "legendFormat": "Alertmanager",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 78,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Value \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations",
+          "max": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Prometheus"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Alertmanager"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "id": 27,
+      "title": "Alerts | firing count",
+      "description": "Number of firing rule instances. Zero is a healthy result. Inspect Prometheus /alerts for names and annotations.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(ALERTS{alertstate=\"firing\"}) or vector(0)",
+          "legendFormat": "Firing alerts",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 8,
+        "y": 78,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Value \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Firing alerts"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "orientation": "horizontal"
+      }
+    },
+    {
+      "id": 28,
+      "title": "Cold start | last model load",
+      "description": "Duration of latest successful model load, including download if uncached. Not mixed into inference latency.\nAI prompt: Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "caption_model_load_seconds",
+          "legendFormat": "Model load",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "range": false,
+          "instant": true,
+          "aiPrompt": "Generate PromQL for a CPU BLIP Streamlit app: separate single and bulk, use rate over two minutes, histogram p50/p95, Summary sum/count means, node CPU idle fraction, MemAvailable RAM, and root disk available space; preserve missing observations as no data and label units explicitly. Use simple prefix regexes to color Single/single blue and Bulk/bulk orange."
+        }
+      ],
+      "gridPos": {
+        "x": 16,
+        "y": 78,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Value \u00b7 linear",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 6,
+            "showPoints": "always",
+            "pointSize": 3,
+            "spanNulls": false
+          },
+          "noValue": "No observations"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Ss]ingle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^[Bb]ulk"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#E69F00"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Model load"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0072B2"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid",
+                  "dash": [
+                    6,
+                    4
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "orientation": "horizontal"
+      }
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "title": "Streamlit app",
+      "url": "http://localhost:8501",
+      "type": "link",
+      "targetBlank": true
+    },
+    {
+      "title": "Prometheus alerts",
+      "url": "http://localhost:9090/alerts",
+      "type": "link",
+      "targetBlank": true
+    }
+  ]
+}
